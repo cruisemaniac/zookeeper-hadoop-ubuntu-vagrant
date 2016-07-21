@@ -1,0 +1,60 @@
+---
+
+# Hadoop version
+hadoop_version: "2.6.0"
+
+# Hadoop user name
+hadoop_user: "hadoop"
+
+# Hadoop prefix
+hadoop_prefix: "/usr/local"
+
+# Hadoop path
+hadoop_path: "/usr/local/hadoop"
+
+# Hadoop tar
+hadoop_tar: "/usr/local/hadoop-{{ hadoop_version }}"
+
+# Hadoop user pub key
+hadoop_pub_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Hadoop Name services
+hadoop_nameservices: "HadoopCluster"
+
+# Hadoop replication
+hadoop_replication: "2"
+
+# Hadoop Name Node dir
+hadoop_namenode_dir: "/usr/local/hadoop/namenode/namenodedir"
+
+# Hadoop Journal Node dir
+hadoop_journalnode_dir: "/etc/hadoop/journal/journaldir"
+
+# Hadoop Data Node dir
+# Prod
+#dhadoop_datanode_diratanode: "/mnt/disk1/datanode,/mnt/disk2/datanode,/mnt/disk3/datanode,/mnt/disk4/datanode,/mnt/disk5/datanode,/mnt/disk6/datanode"
+# TEST
+dhadoop_datanode_diratanode: "/usr/local/hadoop/datanode/datanodedir"
+
+# Hadoop resourcemanager cluster is
+hadoop_resourcemanager: "HadoopYarn"
+
+# Hadoop Node Manager vcores
+hadoop_nodemanager_cpu: "1" # 2
+
+# Hadoop Node Manager RAM (MB)
+hadoop_nodemanager_ram: "256" # 1024
+
+# Yarn scheduler minimum vcores
+yarn_min_cpu: "1" # 2
+
+# Yarn scheduler maximum vcores
+yarn_max_cpu: "1" # 2
+
+# Yarn scheduler minimum-allocation-mb RAM
+yarn_min_ram: "256" # 512
+
+# Yarn scheduler maximum-allocation-mb RAM
+yarn_max_ram: "256" # 1024
+
+java_home_path : "/usr/lib/jvm/java-7-openjdk-amd64"

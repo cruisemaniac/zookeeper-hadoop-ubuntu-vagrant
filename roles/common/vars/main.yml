@@ -1,0 +1,4 @@
+---
+ntp_server : "0.in.pool.ntp.org"
+
+java_home_path : "/usr/lib/jvm/java-7-openjdk-amd64"

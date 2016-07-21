@@ -1,0 +1,10 @@
+---
+# Install Java JDK
+  - apt: name=openjdk-7-jdk state=present
+    tags:
+      - java
+      
+  - name: Copy Java home to /etc/profile.d
+    template: src=../templates/java-env.sh.j2 dest=/etc/profile.d/java-env.sh
+    tags:
+      - java

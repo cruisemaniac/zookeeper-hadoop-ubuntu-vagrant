@@ -1,0 +1,137 @@
+---
+# Create {{ hadoop_user }} group
+- group: name={{ hadoop_user }} state=present
+
+# Add the user "{{ hadoop_user }}" with a bash shell, appending the group "{{ hadoop_user }}" and 'staff' to the user's groups
+- user: name={{ hadoop_user }} shell=/bin/bash groups={{ hadoop_user }},staff append=yes createhome=yes comment={{ hadoop_user }}
+  tags:
+    - createusers
+    - hadoop
+
+- name: Copy the authorized_keys2 file for Hadoop
+  action: authorized_key user={{ hadoop_user }} key="{{ hadoop_pub_key }}"
+  tags:
+    - createusers
+    - hadoop
+
+- file: path={{ item }} state=absent
+  with_items:
+    - "{{ hadoop_path }}"
+    
+# create a "{{ hadoop_path }}" directory if it doesn't exist
+- file: path={{ item }} state=directory
+  with_items:
+    - "{{ hadoop_tar }}"
+    # - "{{ hadoop_path }}"
+  tags:
+    - hadoop
+
+# Download and Unarchive a Hadoop tar file
+- get_url: url=http://apache.mirrors.spacedump.net/hadoop/common/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}.tar.gz dest={{ hadoop_prefix }}/hadoop-{{ hadoop_version }}.tar.gz
+  tags:
+    - hadoop
+
+- unarchive: src={{ hadoop_prefix}}/hadoop-{{ hadoop_version }}.tar.gz dest={{ hadoop_tar }} copy=no
+  tags:
+    - hadoop
+
+# Create Soft link for "{{ hadoop_path }}"-"{{ hadoop_version }}" --> "{{ hadoop_path }}"
+- name: Create symlink
+  file: src={{ hadoop_tar }}/hadoop-{{ hadoop_version }} dest={{ hadoop_path }} state=link force=yes
+  tags:
+    - hadoop    
+
+# create a directory if it is NameNode
+- file: path={{ item }} state=directory
+  with_items:
+    - "{{ hadoop_namenode_dir }}"
+    - "{{ hadoop_journalnode_dir }}"
+  when: '"nn" in "{{ inventory_hostname }}"'
+  tags:
+    - hadoop
+    - namenode
+
+# create a directory if it is Data Node (TEST ONLY)
+- file: path={{ dhadoop_datanode_diratanode }} state=directory
+  when: '"dn" in "{{ inventory_hostname }}"'
+  tags:
+    - hadoop
+    - datanode
+
+# change file ownership, group and mode to "{{ hadoop_user }}".
+- file: path={{ hadoop_path }} owner={{ hadoop_user }} group={{ hadoop_user }} follow=yes
+  tags:
+    - hadoop
+
+# Copy profile.d hadoop.sh file
+- template: src=../templates/hadoop.sh.j2 dest=/etc/profile.d/hadoop.sh
+  tags:
+    - hadoop
+
+# Copy hdfs-site file
+- template: src=../templates/name_journal_node_hdfs-site.xml.j2 dest={{ hadoop_path }}/etc/hadoop/hdfs-site.xml
+  when: '"nn" in "{{ inventory_hostname }}"'
+  tags:
+    - hadoop
+    - namenode
+
+# Copy hdfs-site file
+- template: src=../templates/data_node_hdfs-site.xml.j2 dest={{ hadoop_path }}/etc/hadoop/hdfs-site.xml
+  when: '"dn" in "{{ inventory_hostname }}"'
+  tags:
+    - hadoop
+    - datanode
+
+# Copy core-site file
+- template: src=../templates/core-site.xml.j2 dest={{ hadoop_path }}/etc/hadoop/core-site.xml
+  tags:
+    - hadoop
+
+# Copy capacity-scheduler file
+- template: src=../templates/capacity-scheduler.xml.j2 dest={{ hadoop_path }}/etc/hadoop/capacity-scheduler.xml
+  tags:
+    - hadoop
+
+# Copy yarn-site file
+- template: src=../templates/yarn-site.xml.j2 dest={{ hadoop_path }}/etc/hadoop/yarn-site.xml
+  tags:
+    - hadoop
+
+# Format namenode
+- shell: "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/bin/hdfs namenode –format"
+  when: '"nn" in "{{ inventory_hostname }}"'
+  tags:
+    - namenode
+
+# Initialize Name Node service *The following command will synchronise secondary node image with current node image.
+# If you are adding another name node (for HA) to an existing name node, then execute the command from the old name node. (Otherwise you will loose all of your data)
+- shell: "{{ item }}"
+  with_items:
+    - "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/bin/hdfs namenode –bootstrapStandby"
+    - "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/bin/hdfs namenode –initializeSharedEdits"
+    - "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/bin/hdfs zkfc –formatZK"
+  when: '"nn001" in "{{ inventory_hostname }}"'
+  tags:
+    - hadoop
+    - namenode
+
+# Start Name node service
+- shell: "{{ item }}"
+  with_items:
+    - "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/sbin/hadoop-daemon.sh start namenode"
+    - "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/sbin/yarn-daemon.sh start resourcemanager"
+    - "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/sbin/hadoop-daemon.sh start zkfc"
+  when: '"nn" in "{{ inventory_hostname }}"'
+  tags:
+    - hadoop
+    - namenode
+
+# Start Data Node & Yarn service
+- shell: "{{ item }}"
+  with_items:
+    - "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/sbin/hadoop-daemon.sh start datanode"
+    - "JAVA_HOME={{ java_home_path }} {{ hadoop_path }}/sbin/yarn-daemon.sh start nodemanager"
+  when: '"dn" in "{{ inventory_hostname }}"'
+  tags:
+    - hadoop
+    - datanode

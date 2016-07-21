@@ -1,0 +1,7 @@
+---
+# file: hadoop.yml
+- hosts: Hadoop
+  become: True
+  roles:
+    - common
+    - hadoop

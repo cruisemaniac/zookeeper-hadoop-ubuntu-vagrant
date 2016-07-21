@@ -1,0 +1,7 @@
+---
+# file: zookeeper.yml
+- hosts: ZooKeeper
+  become: True
+  roles:
+    - common
+    - zookeeper

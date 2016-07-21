@@ -1,0 +1,12 @@
+  - name: Update apt-cache
+    apt: update_cache=yes cache_valid_time=3600
+    register: apt_result
+    until: apt_result|success
+    retries: 3
+    delay: 1
+    ignore_errors: yes
+
+  - name: Set Hostname
+    hostname: name={{ inventory_hostname }}
+    tags:
+       - Hostname

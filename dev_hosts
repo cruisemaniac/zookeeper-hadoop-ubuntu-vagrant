@@ -1,0 +1,25 @@
+# file: dev
+
+[HadoopNameNode]
+nn001 ansible_ssh_port=2202 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/nn001/virtualbox/private_key
+nn002 ansible_ssh_port=2203 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/nn002/virtualbox/private_key
+
+[HadoopJournalNode]
+nn001 ansible_ssh_port=2202 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/nn001/virtualbox/private_key
+nn002 ansible_ssh_port=2203 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/nn002/virtualbox/private_key
+
+[HadoopDataNode]
+dn001 ansible_ssh_port=2205 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/dn001/virtualbox/private_key
+dn002 ansible_ssh_port=2206 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/dn002/virtualbox/private_key
+dn003 ansible_ssh_port=2207 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/dn003/virtualbox/private_key
+
+[ZooKeeper]
+zk001 ansible_ssh_port=2222 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/zk001/virtualbox/private_key
+zk002 ansible_ssh_port=2200 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/zk002/virtualbox/private_key
+zk003 ansible_ssh_port=2201 ansible_ssh_host=127.0.0.1 ansible_ssh_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/zk003/virtualbox/private_key
+
+# Hadoop
+[Hadoop:children]
+HadoopNameNode
+HadoopJournalNode
+HadoopDataNode

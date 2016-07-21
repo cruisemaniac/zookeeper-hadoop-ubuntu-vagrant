@@ -1,0 +1,10 @@
+tickTime={{ zookeeper_tickTime }}
+dataDir={{ zookeeper_dataDir }}
+dataLogDir={{ zookeeper_dataLogDir }}
+clientPort=2181
+initLimit={{ zookeeper_initLimit }}
+syncLimit={{ zookeeper_syncLimit}}
+
+{% for host in groups['ZooKeeper'] %}
+server.{{ loop.index + 1 }}={{ hostvars[host]['ansible_eth1']['ipv4']['address'] }}:2888:3888
+{% endfor %}

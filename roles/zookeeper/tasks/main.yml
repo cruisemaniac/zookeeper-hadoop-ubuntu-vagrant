@@ -1,0 +1,2 @@
+  # Run zookeeper installation procedure
+  - include:  zookeeper.yml

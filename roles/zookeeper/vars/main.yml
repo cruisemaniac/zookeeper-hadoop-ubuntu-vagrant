@@ -1,0 +1,34 @@
+---
+
+# Zookeeper version
+zookeeper_version: "3.4.6"
+
+# Zookeeper user name
+zookeeper_user: "zookeeper"
+
+# Zookeeper prefix
+zookeeper_prefix: "/usr/local"
+
+# Zookeeper path
+zookeeper_path: "/usr/local/zookeeper"
+
+# tar path
+zookeeper_tar: "/usr/local/zookeeper-{{ zookeeper_version }}"
+
+# Zookeeper dataDir
+zookeeper_dataDir: "/usr/local/zookeeper/dataDir"
+
+# Zookeeper dataLogDir
+zookeeper_dataLogDir: "/usr/local/zookeeper/logDir"
+
+# Zookeeper tickTime
+zookeeper_tickTime: "2000"
+
+# Zookeeper initLimit
+zookeeper_initLimit: "10"
+
+# Zookeeper syncLimit
+zookeeper_syncLimit: "5"
+
+# Zookeeper user pub key
+zookeeper_pub_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"

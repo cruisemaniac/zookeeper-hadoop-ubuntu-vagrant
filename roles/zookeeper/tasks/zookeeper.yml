@@ -1,0 +1,64 @@
+---
+#mkdir -p /var/lib/zookeeper/myid
+#mkdir -p /opt/zookeeper/data/ echo 1 > /opt/zookeeper/data/myid
+# Create {{ zookeeper_user }} group
+- group: name={{ zookeeper_user }} state=present
+
+# Add the user "{{ zookeeper_user }}" with a bash shell, appending the group "{{ zookeeper_user }}" and 'staff' to the user's groups
+- user: name={{ zookeeper_user }} shell=/bin/bash groups={{ zookeeper_user }},staff append=yes createhome=yes comment={{ zookeeper_user }}
+  tags:
+     - createusers
+     - zookeeper
+
+- name: Copy the authorized_keys2 file for Zookeeper
+  action: authorized_key user={{ zookeeper_user }} key="{{ zookeeper_pub_key }}"
+  tags:
+     - createusers
+     - zookeeper
+
+# create a "{{ zookeeper_path }}" directory if it doesn't exist
+- file: path={{ item }} state=directory
+  with_items:
+    - "{{ zookeeper_tar }}"
+    # - "{{ zookeeper_path }}"
+    # - "{{ zookeeper_dataDir }}"
+    # - "{{ zookeeper_dataLogDir }}"
+  tags:
+     - zookeeper
+
+# Download and Unarchive a ZooKeeper tar file
+- get_url: url=http://archive.apache.org/dist/zookeeper/zookeeper-{{ zookeeper_version }}/zookeeper-{{ zookeeper_version }}.tar.gz dest={{ zookeeper_prefix }}/zookeeper-{{ zookeeper_version }}.tar.gz
+  tags:
+     - zookeeper
+
+- unarchive: src={{ zookeeper_prefix }}/zookeeper-{{ zookeeper_version }}.tar.gz dest={{ zookeeper_tar }} copy=no
+  tags:
+     - zookeeper
+
+# Create Soft link for "{{ zookeeper_path }}"-"{{ zookeeper_version }}" --> "{{ zookeeper_path }}"
+- name: Create symlink
+  file: src={{ zookeeper_tar }}/zookeeper-{{ zookeeper_version }} dest={{ zookeeper_path }} state=link force=yes
+  tags:
+     - zookeeper
+
+# change file ownership, group and mode to "{{ zookeeper_user }}".
+- file: path={{ zookeeper_path }} owner={{ zookeeper_user }} group={{ zookeeper_user }} follow=yes
+  tags:
+     - zookeeper
+
+- file: path={{ item }} state=directory
+  with_items:
+    - "{{ zookeeper_dataDir }}"
+    - "{{ zookeeper_dataLogDir }}"
+  tags:
+    - zookeeper
+
+# Upload Zookeeper cfg
+- template: src=../templates/zoo.cfg.j2 dest={{ zookeeper_path }}/conf/zoo.cfg owner={{ zookeeper_user }} group={{ zookeeper_user }}
+  tags:
+     - zookeeper
+
+# Start Zookeeper service
+- shell: "{{ zookeeper_path }}/bin/zkServer.sh start"
+  tags:
+     - zookeeper

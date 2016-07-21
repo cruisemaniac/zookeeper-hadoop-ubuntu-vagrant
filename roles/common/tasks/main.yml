@@ -1,0 +1,12 @@
+---
+  # update the operating system to have the latest packages of whatever is already installed
+  - include:  OS.yml
+
+  # synchronize the system clock
+  - include:  ntp.yml
+
+  # install some utilities and tools needed on any distribution
+  - include:  additional-tools.yml
+
+  # install Java JDK
+  - include:  java.yml
