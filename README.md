@@ -1,5 +1,10 @@
 # zookeeper-hadoop-ubuntu-vagrant
-Ubuntu trusty64 based 8 vm setup with zookeeper and hadoop
+Ubuntu trusty64 based 8 vm setup with zookeeper and hadoop.
+
+Sets up the following nodes:
+Zookeeper - 3 nodes
+Hadoop Namenodes - 2 nodes
+Hadoop Datanodes - 3 nodes
 
 #Steps to run:
 
